@@ -203,7 +203,7 @@ const ArticleViewer: React.FC<ArticleViewerProps> = ({ article, onEdit, onDelete
                     <h3 className="text-lg font-bold text-white mb-1">{field.title}</h3>
                     <p
                       className="text-white"
-                      style={{ lineHeight: 1.6, textAlign: 'justify' }}
+                      style={{ lineHeight: 1.6, textAlign: 'justify', overflowWrap: 'break-word' }}
                       dangerouslySetInnerHTML={{ __html: parseMarkdown(field.content) }}
                     />
                   </div>

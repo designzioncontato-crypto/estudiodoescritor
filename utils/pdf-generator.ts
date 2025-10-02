@@ -67,7 +67,7 @@ async function buildHtmlForPdf(project: ProjectState, selectedFolderIds: string[
               section.fields.forEach(field => {
                   articleHtml += `<div class="field" style="margin-bottom: 16px;">`;
                   articleHtml += `<h4 style="font-size: 16px; color: #000000; font-weight: 600; margin-bottom: 4px;">${field.title}</h4>`;
-                  articleHtml += `<p style="line-height: 1.6; color: #000000; text-align: justify;">${parseMarkdownForPdf(field.content)}</p>`;
+                  articleHtml += `<p style="line-height: 1.6; color: #000000; text-align: justify; overflow-wrap: break-word;">${parseMarkdownForPdf(field.content)}</p>`;
                   articleHtml += `</div>`;
               });
               articleHtml += `</div>`;
