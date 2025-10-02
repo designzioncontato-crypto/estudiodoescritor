@@ -23,6 +23,7 @@ const App: React.FC = () => {
   const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null);
   const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [isFocusMode, setIsFocusMode] = useState(false);
 
   // --- Automatic Saving Effect ---
   useEffect(() => {
@@ -224,6 +225,10 @@ const App: React.FC = () => {
         setIsPdfModalOpen(false);
     }
 }, [projectState]);
+
+  const handleToggleFocusMode = useCallback(() => {
+    setIsFocusMode(prev => !prev);
+  }, []);
 
   // --- Folder Handlers ---
   const createFolder = useCallback((parentId: string | null = null) => {
@@ -535,36 +540,40 @@ const App: React.FC = () => {
   const selectedArticle = articles.find(a => a.id === selectedArticleId);
 
   return (
-    <div className="flex h-screen font-sans">
-      <Sidebar 
-        folders={folders} 
-        selectedFolderId={selectedFolderId}
-        expandedFolderIds={expandedFolderIdsSet}
-        onCreateFolder={handleCreateFolder}
-        onCreateSubfolder={handleCreateSubfolder}
-        onUpdateFolder={handleUpdateFolder}
-        onDeleteFolder={handleDeleteFolder}
-        onSelectFolder={setSelectedFolderId}
-        onToggleFolderExpansion={handleToggleFolderExpansion}
-        onReorderFolder={handleReorderFolder}
-        onSaveBackup={handleSaveBackup}
-        onExportPdf={() => setIsPdfModalOpen(true)}
-        newlyCreatedFolderId={newlyCreatedFolderId}
-      />
+    <div className="flex h-screen font-sans overflow-hidden">
+      <div className={`flex-shrink-0 transition-all duration-300 ease-in-out overflow-hidden ${isFocusMode ? 'w-0' : 'w-64'}`}>
+        <Sidebar 
+          folders={folders} 
+          selectedFolderId={selectedFolderId}
+          expandedFolderIds={expandedFolderIdsSet}
+          onCreateFolder={handleCreateFolder}
+          onCreateSubfolder={handleCreateSubfolder}
+          onUpdateFolder={handleUpdateFolder}
+          onDeleteFolder={handleDeleteFolder}
+          onSelectFolder={setSelectedFolderId}
+          onToggleFolderExpansion={handleToggleFolderExpansion}
+          onReorderFolder={handleReorderFolder}
+          onSaveBackup={handleSaveBackup}
+          onExportPdf={() => setIsPdfModalOpen(true)}
+          newlyCreatedFolderId={newlyCreatedFolderId}
+        />
+      </div>
       
-      <ArticleListPanel
-        selectedFolder={selectedFolder}
-        articles={articlesInSelectedFolder}
-        selectedArticleId={selectedArticleId}
-        expandedArticleIds={expandedArticleIdsSet}
-        onSelectArticle={setSelectedArticleId}
-        onCreateArticle={handleCreateArticle}
-        onCreateSubArticle={handleCreateSubArticle}
-        onReorderArticle={handleReorderArticle}
-        onToggleArticleExpansion={handleToggleArticleExpansion}
-        onUpdateArticleTitle={handleUpdateArticleTitle}
-        onDeleteArticle={handleDeleteArticle}
-      />
+      <div className={`flex-shrink-0 transition-all duration-300 ease-in-out overflow-hidden ${isFocusMode ? 'w-0' : 'w-80'}`}>
+        <ArticleListPanel
+          selectedFolder={selectedFolder}
+          articles={articlesInSelectedFolder}
+          selectedArticleId={selectedArticleId}
+          expandedArticleIds={expandedArticleIdsSet}
+          onSelectArticle={setSelectedArticleId}
+          onCreateArticle={handleCreateArticle}
+          onCreateSubArticle={handleCreateSubArticle}
+          onReorderArticle={handleReorderArticle}
+          onToggleArticleExpansion={handleToggleArticleExpansion}
+          onUpdateArticleTitle={handleUpdateArticleTitle}
+          onDeleteArticle={handleDeleteArticle}
+        />
+      </div>
 
       <main className="flex-1 p-8 md:p-12 overflow-y-auto bg-gray-800">
          {selectedArticle ? (
@@ -574,6 +583,8 @@ const App: React.FC = () => {
                 onDelete={handleDeleteArticle}
                 allArticles={articles}
                 onSelectArticle={setSelectedArticleId}
+                isFocusMode={isFocusMode}
+                onToggleFocusMode={handleToggleFocusMode}
             />
          ) : selectedFolder ? (
            <div className="flex flex-col items-center justify-center h-full text-center text-gray-500">

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { Article, ImageField } from '../types';
-import { PencilIcon, TrashIcon } from './icons';
+import { PencilIcon, TrashIcon, ArrowsPointingOutIcon, ArrowsPointingInIcon } from './icons';
 import * as db from '../utils/db';
 
 const parseMarkdown = (text: string): string => {
@@ -90,9 +90,11 @@ interface ArticleViewerProps {
   onDelete: (id: string) => void;
   allArticles: Article[];
   onSelectArticle: (id: string) => void;
+  isFocusMode: boolean;
+  onToggleFocusMode: () => void;
 }
 
-const ArticleViewer: React.FC<ArticleViewerProps> = ({ article, onEdit, onDelete, allArticles, onSelectArticle }) => {
+const ArticleViewer: React.FC<ArticleViewerProps> = ({ article, onEdit, onDelete, allArticles, onSelectArticle, isFocusMode, onToggleFocusMode }) => {
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
 
   const handleDelete = () => {
@@ -126,6 +128,17 @@ const ArticleViewer: React.FC<ArticleViewerProps> = ({ article, onEdit, onDelete
           </div>
         ) : (
           <div className="flex items-center gap-4">
+            <button
+              onClick={onToggleFocusMode}
+              className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-gray-700"
+              aria-label={isFocusMode ? "Sair do Modo Foco" : "Entrar no Modo Foco"}
+            >
+              {isFocusMode ? <ArrowsPointingInIcon className="w-5 h-5" /> : <ArrowsPointingOutIcon className="w-5 h-5" />}
+              <span className="text-sm">{isFocusMode ? 'Sair do Foco' : 'Modo Foco'}</span>
+            </button>
+            
+            <div className="w-px h-6 bg-gray-600"></div>
+
             <button
               onClick={() => onEdit(article.id)}
               className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-gray-700"
