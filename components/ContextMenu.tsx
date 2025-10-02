@@ -1,5 +1,6 @@
 
 import React, { useEffect, useRef, useLayoutEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { IconProps } from './icons';
 
 interface Action {
@@ -19,39 +20,47 @@ interface ContextMenuProps {
 
 const ContextMenu: React.FC<ContextMenuProps> = ({ x, y, onClose, actions }) => {
   const menuRef = useRef<HTMLDivElement>(null);
-  // A posição é gerenciada no estado para permitir ajustes após medir o tamanho do menu.
-  // Começa com opacidade 0 para evitar um piscar visual antes que a posição seja corrigida.
+  // Position is managed in state to allow adjustments after measuring the menu size.
+  // Starts with opacity 0 to prevent a visual flicker before the position is corrected.
   const [menuPosition, setMenuPosition] = useState({ top: y, left: x, opacity: 0 });
 
-  // useLayoutEffect é executado de forma síncrona após as mutações do DOM, mas antes do navegador pintar.
-  // Isso é ideal para medir elementos do DOM e ajustar estilos para evitar piscar.
+  // useLayoutEffect runs synchronously after DOM mutations but before the browser paints.
+  // This is ideal for measuring DOM elements and adjusting styles to prevent flickers.
   useLayoutEffect(() => {
     if (menuRef.current) {
       const { innerWidth: viewportWidth, innerHeight: viewportHeight } = window;
       const { width: menuWidth, height: menuHeight } = menuRef.current.getBoundingClientRect();
+      const margin = 8; // Margin from the viewport edges
 
-      let newTop = y;
-      let newLeft = x;
+      let finalTop = y;
+      let finalLeft = x;
 
-      // Ajusta a posição se o menu ultrapassar os limites da janela de visualização.
-      // Adiciona um pequeno buffer (8px) para evitar que toque na borda.
-      if (y + menuHeight > viewportHeight) {
-        newTop = viewportHeight - menuHeight - 8;
+      // --- Horizontal Positioning ---
+      // If the menu overflows the right edge, move it to the left of the cursor.
+      if (finalLeft + menuWidth > viewportWidth - margin) {
+        finalLeft = x - menuWidth;
       }
-      if (x + menuWidth > viewportWidth) {
-        newLeft = viewportWidth - menuWidth - 8;
+      // If it's still off-screen to the left (e.g., on a narrow screen), clamp it to the edge.
+      if (finalLeft < margin) {
+        finalLeft = margin;
       }
 
-      // Garante que o menu também não saia do topo ou da esquerda da tela.
-      newTop = Math.max(8, newTop);
-      newLeft = Math.max(8, newLeft);
+      // --- Vertical Positioning ---
+      // If the menu overflows the bottom edge, move it above the cursor.
+      if (finalTop + menuHeight > viewportHeight - margin) {
+        finalTop = y - menuHeight;
+      }
+      // If it's still off-screen to the top, clamp it to the edge.
+      if (finalTop < margin) {
+        finalTop = margin;
+      }
 
-      // Define a posição final ajustada e torna o menu visível.
-      setMenuPosition({ top: newTop, left: newLeft, opacity: 1 });
+      // Set the final adjusted position and make the menu visible.
+      setMenuPosition({ top: finalTop, left: finalLeft, opacity: 1 });
     }
   }, [x, y]);
 
-  // Efeito para lidar com o fechamento do menu ao clicar fora ou pressionar Escape.
+  // Effect to handle closing the menu on outside click or Escape key press.
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -73,7 +82,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ x, y, onClose, actions }) => 
     };
   }, [onClose]);
 
-  return (
+  return createPortal(
     <div
       ref={menuRef}
       style={{
@@ -81,7 +90,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ x, y, onClose, actions }) => 
         left: `${menuPosition.left}px`,
         opacity: menuPosition.opacity,
       }}
-      // Usa posicionamento 'fixed' para colocar o menu em relação à janela de visualização.
+      // Use 'fixed' positioning to place the menu relative to the viewport.
       className="fixed z-50 w-48 bg-gray-800 border border-gray-600 rounded-md shadow-lg p-1 transition-opacity duration-75"
       onClick={(e) => e.stopPropagation()}
     >
@@ -109,7 +118,8 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ x, y, onClose, actions }) => 
           </li>
         ))}
       </ul>
-    </div>
+    </div>,
+    document.body
   );
 };
 
