@@ -90,7 +90,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
 
   return (
-    <aside className="w-64 bg-gray-900/70 h-screen flex flex-col p-3 backdrop-blur-sm border-r border-gray-700/50">
+    <aside className="relative z-20 w-64 bg-gray-900/70 h-screen flex flex-col p-3 backdrop-blur-sm border-r border-gray-700/50">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl font-bold text-gray-200">Pastas</h1>
         <button
