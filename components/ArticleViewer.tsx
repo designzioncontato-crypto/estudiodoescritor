@@ -106,7 +106,7 @@ const ArticleViewer: React.FC<ArticleViewerProps> = ({ article, onEdit, onDelete
     .filter((a): a is Article => a !== undefined);
 
   return (
-    <div className="max-w-4xl mx-auto h-full flex flex-col">
+    <div className="max-w-4xl mx-auto">
       {/* Header */}
       <div className="flex-shrink-0 py-4 mb-8 flex justify-between items-center">
         <h1 className="text-4xl font-bold text-white truncate">{article.title}</h1>
@@ -160,7 +160,7 @@ const ArticleViewer: React.FC<ArticleViewerProps> = ({ article, onEdit, onDelete
       </div>
 
       {/* Content */}
-      <div className="flex-grow overflow-y-auto pr-4 space-y-8">
+      <div className="pr-4 space-y-8">
         {article.sections.length === 0 && (
           <div className="text-center text-gray-500 pt-16">
             <p>Este artigo está vazio.</p>
