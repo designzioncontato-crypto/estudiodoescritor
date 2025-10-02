@@ -1,0 +1,5 @@
+{
+  "name": "[FINALIZADO] Estúdio do Escritor",
+  "description": "An application for writers to organize their work into colored folders. Users can create, rename, and assign colors to folders in a sleek sidebar.",
+  "requestFramePermissions": []
+}
